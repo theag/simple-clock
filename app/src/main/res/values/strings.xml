@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Simple Clock</string>
+    <string name="keep_screen_on">Keep Screen On</string>
+</resources>
