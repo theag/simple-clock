@@ -16,7 +16,6 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity implements View.OnLayoutChangeListener {
 
     private static final String FLAG_KEEP_SCREEN_ON = "flag keep screen on";
-    private boolean resizeOne;
     private Rect bounds;
 
     @Override
@@ -30,21 +29,17 @@ public class MainActivity extends AppCompatActivity implements View.OnLayoutChan
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
         bounds = new Rect();
-        resizeOne = false;
         findViewById(R.id.textClock).addOnLayoutChangeListener(this);
     }
 
     @Override
     public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-        if(!resizeOne) {
+        if(left != oldLeft || right != oldRight || top != oldTop || bottom != oldBottom) {
             resizeTextClock(left, top, right, bottom);
-        } else {
-            resizeOne = false;
         }
     }
 
     private void resizeTextClock(int left, int top, int right, int bottom) {
-        resizeOne = true;
         TextClock tc = (TextClock)findViewById(R.id.textClock);
         String text = "hh:mm aa";
         int width = right - left + 1;
