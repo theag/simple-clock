@@ -1,4 +1,17 @@
 <resources>
     <string name="app_name">Simple Clock</string>
     <string name="keep_screen_on">Keep Screen On</string>
+    <string name="clock">Clock</string>
+    <string name="alarm">Alarm</string>
+    <string name="lasts">lasts</string>
+    <string name="minute_short">min</string>
+    <string name="repeat">Repeat</string>
+    <string name="sunday_one">S</string>
+    <string name="monday_one">M</string>
+    <string name="tuesday_one">T</string>
+    <string name="wednesday_one">W</string>
+    <string name="thursday_one">T</string>
+    <string name="friday_one">F</string>
+    <string name="saturday_one">S</string>
+    <string name="label">Label</string>
 </resources>

@@ -1,12 +1,16 @@
 package com.simpleclock;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.CheckBox;
@@ -22,6 +26,8 @@ public class MainActivity extends AppCompatActivity implements View.OnLayoutChan
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setSupportActionBar((Toolbar)findViewById(R.id.toolBar));
+        getSupportActionBar().setTitle("");
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         CheckBox cb = (CheckBox)findViewById(R.id.checkBox);
         cb.setChecked(sharedPref.getBoolean(FLAG_KEEP_SCREEN_ON, false));
@@ -30,6 +36,22 @@ public class MainActivity extends AppCompatActivity implements View.OnLayoutChan
         }
         bounds = new Rect();
         findViewById(R.id.textClock).addOnLayoutChangeListener(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_alarm) {
+            Intent intent = new Intent(this, AlarmActivity.class);
+            startActivity(intent);
+        }
+        return true;
     }
 
     @Override
