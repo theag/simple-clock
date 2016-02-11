@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Switch;
 
+import java.io.File;
+
 public class AlarmActivity extends AppCompatActivity implements TimePickerFragment.OnTimeSetListener, LabelDialogFragment.OnLabelSetListener, LastsDialogFragment.OnLastsSetListener, RemoveDialogFragment.OnRemoveListener {
 
     private static final String ADD_TIME_DIALOG = "add time dialog";

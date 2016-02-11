@@ -17,6 +17,8 @@ import android.widget.CheckBox;
 import android.widget.TextClock;
 import android.widget.TextView;
 
+import java.io.File;
+
 public class MainActivity extends AppCompatActivity implements View.OnLayoutChangeListener {
 
     private static final String FLAG_KEEP_SCREEN_ON = "flag keep screen on";
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLayoutChan
         }
         bounds = new Rect();
         findViewById(R.id.textClock).addOnLayoutChangeListener(this);
+        Alarm.loadAll(new File(getFilesDir() + "alarms.txt"));
     }
 
     @Override
@@ -96,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements View.OnLayoutChan
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean(FLAG_KEEP_SCREEN_ON, cb.isChecked());
         editor.commit();
+        Alarm.saveAll(new File(getFilesDir() + "alarms.txt"));
     }
 
 }

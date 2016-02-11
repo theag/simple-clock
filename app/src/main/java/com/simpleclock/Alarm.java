@@ -1,6 +1,13 @@
 package com.simpleclock;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 /**
  * Created by nbp184 on 2016/02/10.
@@ -38,6 +45,39 @@ public class Alarm {
         }
     }
 
+    public static void saveAll(File file) {
+        try {
+            PrintWriter outFile = new PrintWriter(file);
+            for(Alarm alarm : alarms) {
+                outFile.println(alarm.saveString());
+            }
+            outFile.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            file.delete();
+        }
+    }
+
+    public static void loadAll(File file) {
+        if(alarms == null) {
+            alarms = new ArrayList<>();
+        } else {
+            alarms.clear();
+        }
+        try {
+            BufferedReader inFile = new BufferedReader(new FileReader(file));
+            String line = inFile.readLine();
+            while(line != null) {
+                alarms.add(new Alarm(line));
+                line = inFile.readLine();
+            }
+            inFile.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            file.delete();
+        }
+    }
+
     public static final int SUNDAY = 0;
     public static final int MONDAY = 1;
     public static final int TUESDAY = 2;
@@ -47,6 +87,7 @@ public class Alarm {
     public static final int SATURDAY = 6;
 
     private static final String[] weekDays = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+    private static final String unitSep = "" +((char)31);
 
     private int[] time;
     private boolean active;
@@ -66,6 +107,31 @@ public class Alarm {
         }
         label = "";
     }
+
+    private Alarm(String saveStr) {
+        time = new int[2];
+        repeats_on = new boolean[7];
+        StringTokenizer tokens = new StringTokenizer(saveStr, unitSep);
+        time[0] = Integer.parseInt(tokens.nextToken());
+        time[1] = Integer.parseInt(tokens.nextToken());
+        active = Boolean.parseBoolean(tokens.nextToken());
+        expanded = Boolean.parseBoolean(tokens.nextToken());
+        lasts = Integer.parseInt(tokens.nextToken());
+        for(int i = 0; i < repeats_on.length; i++) {
+            repeats_on[i] = Boolean.parseBoolean(tokens.nextToken());
+        }
+        label = tokens.nextToken();
+    }
+
+    private String saveString() {
+        String rv = time[0] +unitSep +time[1] +unitSep +active +unitSep +expanded +unitSep +lasts;
+        for(boolean repeat : repeats_on) {
+            rv += unitSep +repeat;
+        }
+        rv += unitSep +label;
+        return rv;
+    }
+
 
     public String getTime() {
         String rv = "";
