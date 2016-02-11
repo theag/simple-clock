@@ -5,7 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListAdapter;
+import android.widget.NumberPicker;
+import android.widget.Switch;
 import android.widget.TextView;
 
 /**
@@ -47,20 +50,83 @@ public class AlarmAdapter extends BaseAdapter implements ListAdapter {
         TextView tv = (TextView)view.findViewById(R.id.text_time);
         tv.setText(current.getTime());
 
-        tv = (TextView)view.findViewById(R.id.text_time_position);
-        tv.setText(current.getTimePosition());
-
         tv = (TextView)view.findViewById(R.id.text_lasts);
-        tv.setText(context.getString(R.string.lasts) +" " +current.lasts +" " +context.getString(R.string.minute_short));
+        tv.setText(context.getString(R.string.lasts) + " " + current.lasts + " " + context.getString(R.string.minute_short));
+
+        Switch s = (Switch)view.findViewById(R.id.switch_active);
+        s.setChecked(current.isActive());
 
         if(current.expanded) {
             view.findViewById(R.id.layout_summary).setVisibility(View.GONE);
             view.findViewById(R.id.layout_expanded).setVisibility(View.VISIBLE);
             view.setBackgroundResource(R.color.colorPrimayLight);
+
+            Button b = (Button)view.findViewById(R.id.button_sunday);
+            if(current.repeatsOn(Alarm.SUNDAY)) {
+                b.setBackgroundResource(R.drawable.ic_circle_accent_36dp);
+            } else {
+                b.setBackgroundResource(R.drawable.ic_circle_transparent_36dp);
+            }
+
+            b = (Button)view.findViewById(R.id.button_monday);
+            if(current.repeatsOn(Alarm.MONDAY)) {
+                b.setBackgroundResource(R.drawable.ic_circle_accent_36dp);
+            } else {
+                b.setBackgroundResource(R.drawable.ic_circle_transparent_36dp);
+            }
+
+            b = (Button)view.findViewById(R.id.button_tuesday);
+            if(current.repeatsOn(Alarm.TUESDAY)) {
+                b.setBackgroundResource(R.drawable.ic_circle_accent_36dp);
+            } else {
+                b.setBackgroundResource(R.drawable.ic_circle_transparent_36dp);
+            }
+
+            b = (Button)view.findViewById(R.id.button_wednesday);
+            if(current.repeatsOn(Alarm.WEDNESDAY)) {
+                b.setBackgroundResource(R.drawable.ic_circle_accent_36dp);
+            } else {
+                b.setBackgroundResource(R.drawable.ic_circle_transparent_36dp);
+            }
+
+            b = (Button)view.findViewById(R.id.button_thursday);
+            if(current.repeatsOn(Alarm.THURSDAY)) {
+                b.setBackgroundResource(R.drawable.ic_circle_accent_36dp);
+            } else {
+                b.setBackgroundResource(R.drawable.ic_circle_transparent_36dp);
+            }
+
+            b = (Button)view.findViewById(R.id.button_friday);
+            if(current.repeatsOn(Alarm.FRIDAY)) {
+                b.setBackgroundResource(R.drawable.ic_circle_accent_36dp);
+            } else {
+                b.setBackgroundResource(R.drawable.ic_circle_transparent_36dp);
+            }
+
+            b = (Button)view.findViewById(R.id.button_saturday);
+            if(current.repeatsOn(Alarm.SATURDAY)) {
+                b.setBackgroundResource(R.drawable.ic_circle_accent_36dp);
+            } else {
+                b.setBackgroundResource(R.drawable.ic_circle_transparent_36dp);
+            }
+
+            b = (Button)view.findViewById(R.id.button_label);
+            if(current.label.isEmpty()) {
+                b.setText(context.getString(R.string.label));
+            } else {
+                b.setText(current.label);
+            }
         } else {
             view.findViewById(R.id.layout_summary).setVisibility(View.VISIBLE);
             view.findViewById(R.id.layout_expanded).setVisibility(View.GONE);
             view.setBackgroundResource(0);
+            tv = (TextView)view.findViewById(R.id.text_label);
+            if(current.label.isEmpty()) {
+                tv.setVisibility(View.GONE);
+            } else {
+                tv.setVisibility(View.VISIBLE);
+                tv.setText(current.label);
+            }
             tv = (TextView)view.findViewById(R.id.text_summary);
             tv.setText(current.getSummary());
         }

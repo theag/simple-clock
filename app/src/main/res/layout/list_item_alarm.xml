@@ -25,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/text_time"
-                android:textAppearance="@android:style/TextAppearance.Large"
+                android:textSize="40sp"
                 android:text="12:45"/>
 
             <TextView
@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/text_time"
                 android:layout_alignBaseline="@+id/text_time"
-                android:layout_marginLeft="5dp"
+                android:layout_marginLeft="2dp"
                 android:id="@+id/text_time_position"
                 android:text="AM"/>
 
@@ -42,8 +42,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:layout_marginLeft="15dp"
+            android:textAppearance="@android:style/TextAppearance.Large"
             android:gravity="end"
             android:id="@+id/text_lasts"
             android:text="lasts 5 min"
@@ -59,7 +59,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/switch_active"
-            android:checked="true" />
+            android:checked="true"
+            android:onClick="buttonPress"/>
     </LinearLayout>
 
     <GridLayout
@@ -67,6 +68,14 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:id="@+id/layout_summary">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="2dp"
+            android:id="@+id/text_label"
+            android:text="tomorrow"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -108,20 +117,17 @@
         android:orientation="vertical"
         android:id="@+id/layout_expanded">
 
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/checkBox_repeat"
-            android:text="@string/repeat"
-            android:onClick="buttonPress"/>
-
-        <GridLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
             android:id="@+id/layout_repeat"
-            android:orientation="horizontal"
-            android:columnCount="7">
+            android:orientation="horizontal">
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
 
             <Button
                 android:layout_width="wrap_content"
@@ -129,10 +135,15 @@
                 android:minHeight="0dp"
                 android:minWidth="0dp"
                 android:id="@+id/button_sunday"
-                android:background="@drawable/ic_circle_transparent_24dp"
+                android:background="@drawable/ic_circle_transparent_36dp"
                 style="?android:attr/borderlessButtonStyle"
                 android:text="@string/sunday_one"
                 android:onClick="buttonPress"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"/>
 
             <Button
                 android:layout_width="wrap_content"
@@ -140,10 +151,15 @@
                 android:minHeight="0dp"
                 android:minWidth="0dp"
                 android:id="@+id/button_monday"
-                android:background="@drawable/ic_circle_transparent_24dp"
+                android:background="@drawable/ic_circle_transparent_36dp"
                 style="?android:attr/borderlessButtonStyle"
                 android:text="@string/monday_one"
                 android:onClick="buttonPress"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"/>
 
             <Button
                 android:layout_width="wrap_content"
@@ -151,10 +167,15 @@
                 android:minHeight="0dp"
                 android:minWidth="0dp"
                 android:id="@+id/button_tuesday"
-                android:background="@drawable/ic_circle_transparent_24dp"
+                android:background="@drawable/ic_circle_transparent_36dp"
                 style="?android:attr/borderlessButtonStyle"
                 android:text="@string/tuesday_one"
                 android:onClick="buttonPress"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"/>
 
             <Button
                 android:layout_width="wrap_content"
@@ -162,10 +183,15 @@
                 android:minHeight="0dp"
                 android:minWidth="0dp"
                 android:id="@+id/button_wednesday"
-                android:background="@drawable/ic_circle_transparent_24dp"
+                android:background="@drawable/ic_circle_transparent_36dp"
                 style="?android:attr/borderlessButtonStyle"
                 android:text="@string/wednesday_one"
                 android:onClick="buttonPress"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"/>
 
             <Button
                 android:layout_width="wrap_content"
@@ -173,10 +199,15 @@
                 android:minHeight="0dp"
                 android:minWidth="0dp"
                 android:id="@+id/button_thursday"
-                android:background="@drawable/ic_circle_transparent_24dp"
+                android:background="@drawable/ic_circle_transparent_36dp"
                 style="?android:attr/borderlessButtonStyle"
                 android:text="@string/thursday_one"
                 android:onClick="buttonPress"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"/>
 
             <Button
                 android:layout_width="wrap_content"
@@ -184,10 +215,15 @@
                 android:minHeight="0dp"
                 android:minWidth="0dp"
                 android:id="@+id/button_friday"
-                android:background="@drawable/ic_circle_transparent_24dp"
+                android:background="@drawable/ic_circle_transparent_36dp"
                 style="?android:attr/borderlessButtonStyle"
                 android:text="@string/friday_one"
                 android:onClick="buttonPress"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"/>
 
             <Button
                 android:layout_width="wrap_content"
@@ -195,12 +231,17 @@
                 android:minHeight="0dp"
                 android:minWidth="0dp"
                 android:id="@+id/button_saturday"
-                android:background="@drawable/ic_circle_transparent_24dp"
+                android:background="@drawable/ic_circle_transparent_36dp"
                 style="?android:attr/borderlessButtonStyle"
                 android:text="@string/saturday_one"
                 android:onClick="buttonPress"/>
 
-        </GridLayout>
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
 
         <Button
             android:layout_width="match_parent"
@@ -209,6 +250,7 @@
             android:text="@string/label"
             style="?android:attr/borderlessButtonStyle"
             android:gravity="left"
+            android:paddingTop="15dp"
             android:paddingLeft="50dp"
             android:textAllCaps="false"
             android:onClick="buttonPress"/>

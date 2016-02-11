@@ -1,8 +1,6 @@
 package com.simpleclock;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /**
  * Created by nbp184 on 2016/02/10.
@@ -34,16 +32,39 @@ public class Alarm {
         }
     }
 
+    public static void remove(int index) {
+        if(alarms != null) {
+            alarms.remove(index);
+        }
+    }
+
+    public static final int SUNDAY = 0;
+    public static final int MONDAY = 1;
+    public static final int TUESDAY = 2;
+    public static final int WEDNESDAY = 3;
+    public static final int THURSDAY = 4;
+    public static final int FRIDAY = 5;
+    public static final int SATURDAY = 6;
+
+    private static final String[] weekDays = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+
     private int[] time;
-    public boolean isActive;
+    private boolean active;
     public boolean expanded;
     public int lasts;
+    private boolean[] repeats_on;
+    public String label;
 
     public Alarm(int hourOfDay, int minute) {
         time = new int[]{hourOfDay, minute};
-        isActive = true;
+        active = true;
         expanded = true;
         lasts = 5;
+        repeats_on = new boolean[7];
+        for(int i = 0; i < repeats_on.length; i++) {
+            repeats_on[i] = true;
+        }
+        label = "";
     }
 
     public String getTime() {
@@ -72,12 +93,19 @@ public class Alarm {
     }
 
     public String getSummary() {
-        Calendar now = Calendar.getInstance();
-        if(time[0] < now.get(Calendar.HOUR_OF_DAY) || (time[0] == now.get(Calendar.HOUR_OF_DAY) && time[1] <= now.get(Calendar.MINUTE))) {
-            return "Tomorrow";
-        } else {
-            return "Today";
+        String rv = "";
+        for(int i = 0; i < repeats_on.length; i++) {
+            if(repeats_on[i]) {
+                if(!rv.isEmpty()) {
+                    rv += ", ";
+                }
+                rv += weekDays[i];
+            }
         }
+        if(rv.isEmpty()) {
+            rv = "Doesn't occur";
+        }
+        return rv;
     }
 
     public void setTime(int hourOfDay, int minute) {
@@ -91,5 +119,37 @@ public class Alarm {
 
     public int getMinute() {
         return time[1];
+    }
+
+    public void switchRepeat(int dayOfWeek) {
+        repeats_on[dayOfWeek] = !repeats_on[dayOfWeek];
+        if(noRepeat()) {
+            active = false;
+        }
+    }
+
+    private boolean noRepeat() {
+        for(boolean repeatOn : repeats_on) {
+            if(repeatOn) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean setActive(boolean active) {
+        if(active && !this.active && noRepeat()) {
+            return false;
+        }
+        this.active = active;
+        return true;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public boolean repeatsOn(int dayOfWeek) {
+        return repeats_on[dayOfWeek];
     }
 }

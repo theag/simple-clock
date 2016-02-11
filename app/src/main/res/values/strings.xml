@@ -14,4 +14,13 @@
     <string name="friday_one">F</string>
     <string name="saturday_one">S</string>
     <string name="label">Label</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="error_no_repeat">You cannot activate an alarm that occurs on no days.</string>
+    <string name="error">Error</string>
+    <string name="confirm_delete">Are you sure you wish to delete this alarm?</string>
+    <string name="confirm">Confirm</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="lasts_title">Lasts</string>
 </resources>
