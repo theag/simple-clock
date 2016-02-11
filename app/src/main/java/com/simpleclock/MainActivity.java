@@ -1,7 +1,9 @@
 package com.simpleclock;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -13,16 +15,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.CheckBox;
 import android.widget.TextClock;
 import android.widget.TextView;
 
 import java.io.File;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements View.OnLayoutChangeListener {
 
     private static final String FLAG_KEEP_SCREEN_ON = "flag keep screen on";
     private Rect bounds;
+    private BroadcastReceiver receiver;
+    private IntentFilter filter;
+    private BlinkAnimation blink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +46,26 @@ public class MainActivity extends AppCompatActivity implements View.OnLayoutChan
         }
         bounds = new Rect();
         findViewById(R.id.textClock).addOnLayoutChangeListener(this);
-        Alarm.loadAll(new File(getFilesDir() + "alarms.txt"));
+        boolean wasInAlarm = Alarm.loadAll(new File(getFilesDir() + "alarms.txt"));
+        blink = new BlinkAnimation(1.0f, 0.0f);
+        if(wasInAlarm) {
+            Calendar now = Calendar.getInstance();
+            int index = Alarm.isInAlarm(now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE));
+            if(index >= 0) {
+                blink.setLasts(Alarm.get(index).lasts);
+                findViewById(R.id.textClock).startAnimation(blink);
+                findViewById(R.id.button_dismiss_alarm).setVisibility(View.VISIBLE);
+            }
+        }
+        filter = new IntentFilter();
+        filter.addAction("android.intent.action.TIME_TICK");
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                doAlarmCheck();
+            }
+        };
+        registerReceiver(receiver, filter);
     }
 
     @Override
@@ -82,12 +109,19 @@ public class MainActivity extends AppCompatActivity implements View.OnLayoutChan
     }
 
     public void buttonPress(View view) {
-        if(view.getId() == R.id.checkBox) {
-            if(((CheckBox)view).isChecked()) {
-                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            } else {
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            }
+        switch(view.getId()) {
+            case R.id.checkBox:
+                if(((CheckBox)view).isChecked()) {
+                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                } else {
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
+                break;
+            case R.id.button_dismiss_alarm:
+                blink.cancel();
+                findViewById(R.id.textClock).clearAnimation();
+                view.setVisibility(View.INVISIBLE);
+                break;
         }
     }
 
@@ -99,7 +133,43 @@ public class MainActivity extends AppCompatActivity implements View.OnLayoutChan
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean(FLAG_KEEP_SCREEN_ON, cb.isChecked());
         editor.commit();
-        Alarm.saveAll(new File(getFilesDir() + "alarms.txt"));
+        Alarm.saveAll(new File(getFilesDir() + "alarms.txt"), blink.hasStarted());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(receiver, filter);
+        if(findViewById(R.id.button_dismiss_alarm).getVisibility() == View.VISIBLE) {
+            Calendar now = Calendar.getInstance();
+            if(Alarm.isInAlarm(now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE)) < 0) {
+                blink.cancel();
+                findViewById(R.id.textClock).clearAnimation();
+                findViewById(R.id.button_dismiss_alarm).setVisibility(View.INVISIBLE);
+            }
+        }
+    }
+
+    private void doAlarmCheck() {
+        Calendar now = Calendar.getInstance();
+        Alarm alarm = Alarm.isAlarmStart(now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE));
+        if(alarm != null) {
+            blink.setLasts(alarm.lasts);
+            findViewById(R.id.textClock).startAnimation(blink);
+            findViewById(R.id.button_dismiss_alarm).setVisibility(View.VISIBLE);
+        } else if(blink.hasStarted()) {
+            blink.increment();
+            if(blink.isDone()) {
+                findViewById(R.id.textClock).clearAnimation();
+                findViewById(R.id.button_dismiss_alarm).setVisibility(View.INVISIBLE);
+            }
+        }
     }
 
 }

@@ -45,9 +45,30 @@ public class Alarm {
         }
     }
 
-    public static void saveAll(File file) {
+    public static Alarm isAlarmStart(int hourOfDay, int minute) {
+        for(Alarm alarm : alarms) {
+            if(alarm.active && alarm.time.equals(hourOfDay, minute)) {
+                return alarm;
+            }
+        }
+        return null;
+    }
+
+    public static int isInAlarm(int hourOfDay, int minute) {
+        Alarm alarm;
+        for(int i = 0; i < alarms.size(); i++) {
+            alarm = alarms.get(i);
+            if(alarm.time.diff(hourOfDay, minute) < alarm.lasts) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static void saveAll(File file, boolean isInAlarm) {
         try {
             PrintWriter outFile = new PrintWriter(file);
+            outFile.println(isInAlarm);
             for(Alarm alarm : alarms) {
                 outFile.println(alarm.saveString());
             }
@@ -58,15 +79,18 @@ public class Alarm {
         }
     }
 
-    public static void loadAll(File file) {
+    public static boolean loadAll(File file) {
         if(alarms == null) {
             alarms = new ArrayList<>();
         } else {
             alarms.clear();
         }
+        boolean isInAlarm;
         try {
             BufferedReader inFile = new BufferedReader(new FileReader(file));
             String line = inFile.readLine();
+            isInAlarm = Boolean.parseBoolean(line);
+            line = inFile.readLine();
             while(line != null) {
                 alarms.add(new Alarm(line));
                 line = inFile.readLine();
@@ -75,7 +99,9 @@ public class Alarm {
         } catch (IOException e) {
             e.printStackTrace();
             file.delete();
+            isInAlarm = false;
         }
+        return isInAlarm;
     }
 
     public static final int SUNDAY = 0;
@@ -88,8 +114,9 @@ public class Alarm {
 
     private static final String[] weekDays = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
     private static final String unitSep = "" +((char)31);
+    private static final String nullStr = "" +((char)0);
 
-    private int[] time;
+    private Time time;
     private boolean active;
     public boolean expanded;
     public int lasts;
@@ -97,10 +124,10 @@ public class Alarm {
     public String label;
 
     public Alarm(int hourOfDay, int minute) {
-        time = new int[]{hourOfDay, minute};
+        time =new Time(hourOfDay, minute);
         active = true;
         expanded = true;
-        lasts = 5;
+        lasts = 1;
         repeats_on = new boolean[7];
         for(int i = 0; i < repeats_on.length; i++) {
             repeats_on[i] = true;
@@ -109,11 +136,9 @@ public class Alarm {
     }
 
     private Alarm(String saveStr) {
-        time = new int[2];
         repeats_on = new boolean[7];
         StringTokenizer tokens = new StringTokenizer(saveStr, unitSep);
-        time[0] = Integer.parseInt(tokens.nextToken());
-        time[1] = Integer.parseInt(tokens.nextToken());
+        time = new Time(Integer.parseInt(tokens.nextToken()), Integer.parseInt(tokens.nextToken()));
         active = Boolean.parseBoolean(tokens.nextToken());
         expanded = Boolean.parseBoolean(tokens.nextToken());
         lasts = Integer.parseInt(tokens.nextToken());
@@ -121,41 +146,31 @@ public class Alarm {
             repeats_on[i] = Boolean.parseBoolean(tokens.nextToken());
         }
         label = tokens.nextToken();
+        if(label.equals(nullStr)) {
+            label = "";
+        }
     }
 
     private String saveString() {
-        String rv = time[0] +unitSep +time[1] +unitSep +active +unitSep +expanded +unitSep +lasts;
+        String rv = time.hourOfDay +unitSep +time.minute +unitSep +active +unitSep +expanded +unitSep +lasts;
         for(boolean repeat : repeats_on) {
             rv += unitSep +repeat;
         }
-        rv += unitSep +label;
+        if(label.isEmpty()) {
+            rv += unitSep +nullStr;
+        } else {
+            rv += unitSep + label;
+        }
         return rv;
     }
 
 
     public String getTime() {
-        String rv = "";
-        if(time[0] > 12) {
-            rv += (time[0] - 12);
-        } else if(time[0] == 0) {
-            rv += "12";
-        } else {
-            rv += time[0];
-        }
-        rv += ":";
-        if(time[1] < 10) {
-            rv += "0";
-        }
-        rv += time[1];
-        return rv;
+        return time.print();
     }
 
     public String getTimePosition() {
-        if(time[0] >= 12) {
-            return "PM";
-        } else {
-            return "AM";
-        }
+        return time.getPosition();
     }
 
     public String getSummary() {
@@ -175,16 +190,16 @@ public class Alarm {
     }
 
     public void setTime(int hourOfDay, int minute) {
-        time[0] = hourOfDay;
-        time[1] = minute;
+        time.hourOfDay = hourOfDay;
+        time.minute = minute;
     }
 
     public int getHour() {
-        return time[0];
+        return time.hourOfDay;
     }
 
     public int getMinute() {
-        return time[1];
+        return time.minute;
     }
 
     public void switchRepeat(int dayOfWeek) {
@@ -217,5 +232,55 @@ public class Alarm {
 
     public boolean repeatsOn(int dayOfWeek) {
         return repeats_on[dayOfWeek];
+    }
+
+    public class Time {
+        public int hourOfDay;
+        public int minute;
+
+        public Time(int hourOfDay, int minute) {
+            this.hourOfDay = hourOfDay;
+            this.minute = minute;
+        }
+
+        public String print() {
+            String rv = "";
+            if(hourOfDay > 12) {
+                rv += (hourOfDay - 12);
+            } else if(hourOfDay == 0) {
+                rv += "12";
+            } else {
+                rv += hourOfDay;
+            }
+            rv += ":";
+            if(minute < 10) {
+                rv += "0";
+            }
+            rv += minute;
+            return rv;
+        }
+
+        public String getPosition() {
+            if(hourOfDay >= 12) {
+                return "PM";
+            } else {
+                return "AM";
+            }
+        }
+
+        public boolean equals(int hourOfDay, int minute) {
+            return this.hourOfDay == hourOfDay && this.minute == minute;
+        }
+
+        public int diff(int hourOfDay, int minute) {
+            int rv = this.minute - minute;
+            int hourAdjust = 0;
+            while(rv < 0) {
+                rv += 60;
+                hourAdjust++;
+            }
+            rv += this.hourOfDay - hourAdjust - hourOfDay;
+            return rv;
+        }
     }
 }

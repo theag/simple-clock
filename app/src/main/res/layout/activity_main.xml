@@ -26,6 +26,19 @@
         tools:targetApi="17"
         android:id="@+id/textClock" />
 
+    <Button
+        android:id="@+id/button_dismiss_alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        style="?android:attr/borderlessButtonStyle"
+        android:background="@null"
+        android:drawableLeft="@drawable/ic_alarm_off_24dp"
+        android:text="@string/dismiss_alarm"
+        android:textAllCaps="false"
+        android:visibility="invisible"
+        android:onClick="buttonPress"/>
+
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
